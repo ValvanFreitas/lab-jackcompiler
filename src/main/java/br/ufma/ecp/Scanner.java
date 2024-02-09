@@ -169,20 +169,51 @@ public class Scanner {
     private boolean isAlpha(char c) {
         return (c >= 'a' && c <= 'z') ||
                (c >= 'A' && c <= 'Z') ||
-                c == '_';
-      }
+                c == '_';}
+    
+    private void skipBlockComments() {
+        boolean endComment = false;
+        advance();
+    
+        while (!endComment) {
+          advance();
+          char ch = peek();
+    
+          if (ch == '\n')
+              line++;
+    
+          if (ch == 0) { // eof, lexical error
+            System.exit(1);}
+    
+          if (ch == '*') {
+            for (ch = peek(); ch == '*'; advance(), ch = peek())
+              ;
+            if (ch == '/') {
+              endComment = true;
+              advance();}}}}
+    
+    private void skipWhitespace() {
+        char ch = peek();
+        while (ch == ' ' || ch == '\r' || ch == '\t' || ch == '\n') {
+
+            if (ch == '\n')
+                line++;
+
+            advance();
+            ch = peek();}}
     
       private boolean isAlphaNumeric(char c) {
-        return isAlpha(c) || Character.isDigit((c));
-      }
+        return isAlpha(c) || Character.isDigit((c));}
     
 
     private char peek () {
         if (current < input.length)
            return (char)input[current];
-       return 0;
-    }
-
-
+       return 0;}    
     
-}
+    private char peekNext () {
+        int next = current + 1;
+        if ( next  < input.length) {
+            return (char)input[next];} 
+        else {
+            return 0;}}}
