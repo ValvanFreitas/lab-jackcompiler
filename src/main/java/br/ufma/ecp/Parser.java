@@ -122,6 +122,43 @@ public class Parser {
         parseStatements();
         expectPeek(RBRACE);
         printNonTerminal("/whileStatement");}
+
+     private void parseVarDec() {
+        printNonTerminal("varDec");
+        expectPeek(VAR);
+        expectPeek(INT, CHAR, BOOLEAN, IDENT);
+        expectPeek(IDENT);
+        while (peekTokenIs(COMMA)) {
+            expectPeek(COMMA);
+            expectPeek(IDENT);}
+        expectPeek(SEMICOLON);
+        printNonTerminal("/varDec");}
+
+    //adicionando a lista de parâmetros 
+    private void parseParameterList() {
+        printNonTerminal("parameterList");
+        if (!peekTokenIs(RPAREN)) {
+            expectPeek(INT, CHAR, BOOLEAN, IDENT);
+            expectPeek(IDENT);}
+        while (peekTokenIs(COMMA)) {
+            expectPeek(COMMA);
+            expectPeek(INT, CHAR, BOOLEAN, IDENT);
+            expectPeek(IDENT);}
+        printNonTerminal("/parameterList");}
+
+    private void parseClassVarDec() {
+        
+        printNonTerminal("classVarDec");
+        expectPeek(FIELD, STATIC);
+        expectPeek(INT, CHAR, BOOLEAN, IDENT);
+        expectPeek(IDENT);
+
+        while (peekTokenIs(COMMA)) {
+            expectPeek(COMMA);
+            expectPeek(IDENT);}
+
+        expectPeek(SEMICOLON);
+        printNonTerminal("/classVarDec");}       
     
      // 'do' subrotineCall ';'
      public void parseDo() {
