@@ -39,6 +39,26 @@ public class Parser {
             parseSubroutineDec();}
         expectPeek(RBRACE);
         printNonTerminal("/class");}
+
+    private void parseSubroutineDec() {
+        printNonTerminal("subroutineDec");
+        expectPeek(CONSTRUCTOR, FUNCTION, METHOD);
+        expectPeek(VOID, INT, CHAR, BOOLEAN, IDENT);
+        expectPeek(IDENT);
+        expectPeek(LPAREN);
+        parseParameterList();
+        expectPeek(RPAREN);
+        parseSubroutineBody();
+        printNonTerminal("/subroutineDec");}
+
+    private void parseSubroutineBody() {
+        printNonTerminal("subroutineBody");
+        expectPeek(LBRACE);
+        while (peekTokenIs(VAR)) {
+            parseVarDec();}            
+        parseStatements();
+        expectPeek(RBRACE);
+        printNonTerminal("/subroutineBody");}
     
      // 'do' subrotineCall ';'
      public void parseDo() {
