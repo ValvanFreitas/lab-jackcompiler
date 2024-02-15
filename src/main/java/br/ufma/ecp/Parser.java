@@ -10,12 +10,15 @@ public class Parser {
      private Scanner scan;
      private Token currentToken;
      private Token peekToken;
+     //Possibilita concatenar, através do Stringbuilder, para formar string
      private StringBuilder xmlOutput = new StringBuilder();
- 
+
+     //Constructor - receives the inputs
      public Parser(byte[] input) {
          scan = new Scanner(input);
          nextToken();}
- 
+    
+     //Passa o futuro Token, PeekToken é o proximo token
      private void nextToken() {
          currentToken = peekToken;
          peekToken = scan.nextToken();}
@@ -113,20 +116,23 @@ public class Parser {
 
      static public boolean isOperator(String op) {
         return op!= "" && "+-*/<>=~&|".contains(op);}
-
+     
+     //Transforma em string
      public String XMLOutput() {
          return xmlOutput.toString();}
- 
+    
+     //Imprime strings não terminais
      private void printNonTerminal(String nterminal) {
          xmlOutput.append(String.format("<%s>\r\n", nterminal));}
  
- 
+     //Método para comparar tokens
      boolean peekTokenIs(TokenType type) {
          return peekToken.type == type;}
- 
+     //Método para comparar tokens
      boolean currentTokenIs(TokenType type) {
          return currentToken.type == type;}
- 
+    
+     //Verificar os toekns a frente
      private void expectPeek(TokenType... types) {  //se for o token esperado, ele avança e imprime esse token
          for (TokenType type : types) {
              if (peekToken.type == type) {
@@ -142,13 +148,12 @@ public class Parser {
          } else {
              throw error(peekToken, "Expected "+type.name());}}
  
- 
+     //Geração de mensagens de error 
      private static void report(int line, String where,
          String message) {
              System.err.println(
-             "[line " + line + "] Error" + where + ": " + message);}
- 
- 
+             "[line " + line + "] Error" + where + ": " + message);} 
+     //Geração de mensagens de error 
      private ParseError error(Token token, String message) {
          if (token.type == TokenType.EOF) {
              report(token.line, " at end", message);} 
