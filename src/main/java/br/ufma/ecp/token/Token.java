@@ -14,7 +14,7 @@ public class Token {
         var type = this.type.toString();
         String valor = lexeme;
         if (type.equals("NUMBER"))
-            type =  "intergerConstant";
+            type =  "integerConstant";
 
         if (type.equals("STRING"))
             type =  "stringConst";
@@ -37,4 +37,4 @@ public class Token {
         if (TokenType.isKeyword(this.type) )
             type = "keyword";
 
-        return "<"+line+":"+ type + "> " + valor  + " </" + type + ">";}}
+        return "<"+ type + "> " + valor  + " </" + type + ">";}}
