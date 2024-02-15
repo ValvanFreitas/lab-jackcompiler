@@ -35,7 +35,7 @@ public class Parser {
         expectPeek(SEMICOLON);
         printNonTerminal("/doStatement");}
 
-    // subroutineCall -> subroutineName '(' expressionList ')' | (className|varName)
+    //casos da estrutura necessária para leitura da subroutineCall -> subroutineName '(' expressionList ')' | (className|varName)
     // '.' subroutineName '(' expressionList ')
     void parseSubroutineCall() {
         if (peekTokenIs(LPAREN)) {
@@ -48,22 +48,23 @@ public class Parser {
             expectPeek(LPAREN);
             parseExpressionList();
             expectPeek(RPAREN);}}
-
+    
+    //Pode ser vazio ou ter uma expressão
     void parseExpressionList() {
         printNonTerminal("expressionList");
 
-        if (!peekTokenIs(RPAREN)) // verifica se tem pelo menos uma expressao
+        if (!peekTokenIs(RPAREN)) // verifica se há pelo menos uma expressão
         {
             parseExpression();}
 
-        // procurando as demais
+        // procurando as demais expressões
         while (peekTokenIs(COMMA)) {
             expectPeek(COMMA);
             parseExpression();}
 
         printNonTerminal("/expressionList");}    
 
-     //letStatement -> 'let' identifier( '[' expression ']' )? '=' expression ';’
+     //estrutura necessária para leitura do letStatement -> 'let' identifier( '[' expression ']' )? '=' expression ';’
      void parseLet() {
         printNonTerminal("letStatement");
         expectPeek(LET);
@@ -80,7 +81,7 @@ public class Parser {
         printNonTerminal("/letStatement");}
 
      void parseExpression() {
-        printNonTerminal("expression");
+        printNonTerminal("expression"); //Teste de unidade
         parseTerm ();
         while (isOperator(peekToken.lexeme)) {
             expectPeek(peekToken.type);
@@ -112,8 +113,9 @@ public class Parser {
     
         printNonTerminal("/term");}
  
-     // funções auxiliares
-
+     // Funções Auxiliares
+    
+     //Verifica se é operador
      static public boolean isOperator(String op) {
         return op!= "" && "+-*/<>=~&|".contains(op);}
      
