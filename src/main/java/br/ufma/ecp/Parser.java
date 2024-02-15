@@ -91,6 +91,38 @@ public class Parser {
             default:
                 throw error(peekToken, "Expected a statement");}}
     
+    private void parseReturn() {
+        printNonTerminal("returnStatement");
+        expectPeek(RETURN);
+        if (!peekTokenIs(SEMICOLON)) {
+            parseExpression();}
+        expectPeek(SEMICOLON);
+        printNonTerminal("/returnStatement");}
+
+    //declarando o if    
+    private void parseIf() {
+        printNonTerminal("ifStatement");
+        expectPeek(IF);
+        expectPeek(LPAREN);
+        parseExpression();
+        expectPeek(RPAREN);
+        expectPeek(LBRACE);
+        parseStatements();
+        expectPeek(RBRACE);
+        printNonTerminal("/ifStatement");}
+
+    //declarando o while
+    private void parseWhile() {
+        printNonTerminal("whileStatement");
+        expectPeek(WHILE);
+        expectPeek(LPAREN);
+        parseExpression();
+        expectPeek(RPAREN);
+        expectPeek(LBRACE);
+        parseStatements();
+        expectPeek(RBRACE);
+        printNonTerminal("/whileStatement");}
+    
      // 'do' subrotineCall ';'
      public void parseDo() {
         printNonTerminal("doStatement");
