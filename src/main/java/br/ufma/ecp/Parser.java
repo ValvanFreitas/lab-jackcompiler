@@ -59,6 +59,37 @@ public class Parser {
         parseStatements();
         expectPeek(RBRACE);
         printNonTerminal("/subroutineBody");}
+
+    //adicionando os statemensts utilizados no squaregame
+    private void parseStatements() {
+        printNonTerminal("statements");
+        while (peekToken.type == WHILE ||
+                peekToken.type == IF ||
+                peekToken.type == LET ||
+                peekToken.type == DO ||
+                peekToken.type == RETURN) {
+            parseStatement();}
+        printNonTerminal("/statements");}
+
+    private void parseStatement() {
+        switch (peekToken.type) {
+            case LET:
+                parseLet();
+                break;
+            case WHILE:
+                parseWhile();
+                break;
+            case IF:
+                parseIf();
+                break;
+            case RETURN:
+                parseReturn();
+                break;
+            case DO:
+                parseDo();
+                break;
+            default:
+                throw error(peekToken, "Expected a statement");}}
     
      // 'do' subrotineCall ';'
      public void parseDo() {
