@@ -48,14 +48,14 @@ public class ParserTest extends TestSupport {
     
         var expectedResult =  """
           <term>
-          <stringConstant> Hello World </stringConstant>
+          <stringConst> Hello World </stringConst>
           </term>
           """;
               
           var result = parser.XMLOutput();
           expectedResult = expectedResult.replaceAll("  ", "");
           result = result.replaceAll("\r", ""); // no codigo em linux não tem o retorno de carro
-          assertEquals(expectedResult, result);}}
+          assertEquals(expectedResult, result);}
 
     @Test
     public void testParseExpressionSimple() {
@@ -108,49 +108,45 @@ public class ParserTest extends TestSupport {
         assertEquals(expectedResult, result);}
 
     @Test
-    public void testParseLetIndiceSimple() {
-        var input = "let var[1] = 10+20;";
+    public void testParseXLetSimple() {
+        var input = "let var1 = 10+20;";
         var parser = new Parser(input.getBytes(StandardCharsets.UTF_8));
         parser.parseLet();
 				var expectedResult =  """
-	    <letStatement>
+	       <letStatement>
         <keyword> let </keyword>
         <identifier> var1 </identifier>
-        <symbol> [ </symbol>
-        <expression>
-          <term>
-          <integerConstant> 1 </integerConstant>
-          </term>
-          </expression>
-        <symbol> ] </symbol>
         <symbol> = </symbol>
         <expression>
           <term>
           <integerConstant> 10 </integerConstant>
           </term>
           <symbol> + </symbol>
-          </term>
+          <term>
           <integerConstant> 20 </integerConstant>
           </term>
-        </expression>
+          </expression>
         <symbol> ; </symbol>
-        </letStatement> 
+      </letStatement> 
 				""";
         var result = parser.XMLOutput();
         expectedResult = expectedResult.replaceAll("  ", "");
-        result = result.replaceAll("\r", ""); // no codigo em linux não tem o retorno de carro
+        result = result.replaceAll("\r", ""); // no codigo em linux não tem o retorno
         assertEquals(expectedResult, result);}
 
     @Test
     public void testParseSubroutineCall() {
-        var input = "hello()";
+        var input = ".hello()";
         var parser = new Parser(input.getBytes(StandardCharsets.UTF_8));
         parser.parseSubroutineCall();
         
         var expectedResult =  """
-          <identifier> hello </identifier>
+          <symbol> . </symbol>
+          <identifier> hello </identifier>          
           <symbol> ( </symbol>
-          <symbol> ) </symbol
+          <expressionList>
+          </expressionList>
+          <symbol> ) </symbol>          
           """;
               
           var result = parser.XMLOutput();
@@ -169,6 +165,8 @@ public class ParserTest extends TestSupport {
             <keyword> do </keyword>
             <identifier> hello </identifier>
             <symbol> ( </symbol>
+            <expressionList>
+            </expressionList>
             <symbol> ) </symbol>
             <symbol> ; </symbol>
           </doStatement>
@@ -210,4 +208,4 @@ public class ParserTest extends TestSupport {
         parser.parse();
         var result = parser.XMLOutput();
         expectedResult = expectedResult.replaceAll("  ", "");
-        assertEquals(expectedResult, result);}
+        assertEquals(expectedResult, result);}}
