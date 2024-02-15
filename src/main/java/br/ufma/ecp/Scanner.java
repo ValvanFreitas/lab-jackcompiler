@@ -1,24 +1,18 @@
 package br.ufma.ecp;
-
 import static br.ufma.ecp.token.TokenType.*;
-
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
-
 import br.ufma.ecp.token.Token;
 import br.ufma.ecp.token.TokenType;
 
 public class Scanner {
-
     private byte[] input;
     private int current;
     private int start;
     private int line = 1;
-
     private static final Map<String, TokenType> keywords;
  
-
     static {
         keywords = new HashMap<>();
         keywords.put("while", TokenType.WHILE);
@@ -42,7 +36,6 @@ public class Scanner {
         keywords.put("if", TokenType.IF);
         keywords.put("else", TokenType.ELSE);
         keywords.put("return", TokenType.RETURN);}
-
     
     public Scanner (byte[] input) {
         this.input = input;
@@ -50,10 +43,9 @@ public class Scanner {
         start = 0;}
 
     private void skipLineComments() {
-        char ch = peek();
-        while (ch == ' ' || ch == '\r' || ch == '\t' || ch == '\n') {
+        for (char ch = peek(); ch != '\n' && ch != 0; advance(), ch = peek())
             if (ch == '\n')
-                line++;}}
+                line++;}
     
     public Token nextToken () {
         skipWhitespace();
@@ -61,14 +53,11 @@ public class Scanner {
         char ch = peek();
         if (Character.isDigit(ch)) {
             return number();}
-
         if (isAlpha(ch)) {
             return identifier();}
-
         switch (ch) {
             case '"':
                 return string();
-            
             case '/':
                 if (peekNext() == '/') {
                     skipLineComments();
@@ -134,8 +123,10 @@ public class Scanner {
                 return new Token (TokenType.COMMA,",",line);
             case 0:
                 advance();
-                return new Token (TokenType.EOF,"EOF",line);}
-        return null;}
+                return new Token (TokenType.EOF,"EOF",line);
+            default:
+                advance();
+                return new Token(ILLEGAL, Character.toString(ch), line);}}
     
     private Token identifier() {
         while (isAlphaNumeric(peek())) advance();
@@ -147,7 +138,6 @@ public class Scanner {
     private Token number() {
         while (Character.isDigit(peek())) {
             advance();}
-        
             String num = new String(input, start, current-start, StandardCharsets.UTF_8)  ;
             return new Token(NUMBER, num,line);}
 
