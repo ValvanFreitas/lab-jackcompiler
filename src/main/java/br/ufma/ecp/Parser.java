@@ -21,11 +21,25 @@ public class Parser {
      //Passa o futuro Token, PeekToken é o proximo token
      private void nextToken() {
          currentToken = peekToken;
-         peekToken = scan.nextToken();}
+         peekToken = scan.nextToken();} 
  
- 
-     public void parse () {}
-   
+     public void parse () {    
+         parseClass();
+    }
+    
+    private void parseClass() {
+        printNonTerminal("class");
+        expectPeek(CLASS);
+        expectPeek(IDENT);
+        expectPeek(LBRACE);
+        while (peekTokenIs(STATIC) || peekTokenIs(FIELD)) {
+            System.out.println(peekToken);
+            parseClassVarDec();}
+        while (peekTokenIs(FUNCTION) || peekTokenIs(CONSTRUCTOR) || peekTokenIs(METHOD)) {
+            parseSubroutineDec();}
+        expectPeek(RBRACE);
+        printNonTerminal("/class");}
+    
      // 'do' subrotineCall ';'
      public void parseDo() {
         printNonTerminal("doStatement");
