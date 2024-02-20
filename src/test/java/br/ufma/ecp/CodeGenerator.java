@@ -1,10 +1,8 @@
+
 package br.ufma.ecp;
-import static org.junit.Assert.assertEquals;
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import static org.junit.Assert.assertEquals;
 import org.junit.Test;
-import br.ufma.ecp.token.Token;
-import br.ufma.ecp.token.TokenType;
 
 public class CodeGenerator extends TestSupport {
 
@@ -20,7 +18,9 @@ public class CodeGenerator extends TestSupport {
         String expected = """
                 push constant 10       
                     """;
-            assertEquals(expected, actual);}
+            assertEquals(expected, actual);
+    }
+
 
     @Test
     public void testSimpleExpression () {
@@ -35,8 +35,9 @@ public class CodeGenerator extends TestSupport {
                 push constant 10
                 push constant 30
                 add       
-                    """;
-            assertEquals(expected, actual);}
+                """;
+            assertEquals(expected, actual);
+    }
 
     @Test
     public void testSimpleExpression2 () {
@@ -50,12 +51,34 @@ public class CodeGenerator extends TestSupport {
         String expected = """
                 push constant 10
                 push constant 30
-                add
+                add       
                 push constant 40
                 call Math.multiply 2
-                    """;
-            assertEquals(expected, actual);}
+                """;
+            assertEquals(expected, actual);
+    }
 
+
+    @Test
+    public void testSimpleExpression3 () {
+        var input = """
+            10 + (30 * 40)
+            """;
+        
+        var parser = new Parser(input.getBytes(StandardCharsets.UTF_8));
+        parser.parseExpression();
+        String actual = parser.VMOutput();
+        String expected = """
+                push constant 10
+                push constant 30
+                push constant 40
+                call Math.multiply 2
+                add  
+                """;
+            assertEquals(expected, actual);
+    }
+
+    /*Literais strings*/
     @Test
     public void testLiteralString () {
         var input = """
@@ -75,7 +98,10 @@ public class CodeGenerator extends TestSupport {
                 push constant 65
                 call String.appendChar 2
                     """;
-            assertEquals(expected, actual);}
+            assertEquals(expected, actual);
+    }
+
+    /*Literais keyword*/
     @Test
     public void testFalse () {
         var input = """
@@ -88,7 +114,8 @@ public class CodeGenerator extends TestSupport {
         String expected = """
                 push constant 0       
                     """;
-            assertEquals(expected, actual);}
+            assertEquals(expected, actual);
+    }
 
     @Test
     public void testNull () {
@@ -102,7 +129,8 @@ public class CodeGenerator extends TestSupport {
         String expected = """
                 push constant 0       
                     """;
-            assertEquals(expected, actual);}
+            assertEquals(expected, actual);
+    }
 
     @Test
     public void testTrue () {
@@ -117,7 +145,8 @@ public class CodeGenerator extends TestSupport {
                 push constant 0
                 not       
                     """;
-            assertEquals(expected, actual);}
+            assertEquals(expected, actual);
+    }
 
     @Test
     public void testThis () {
@@ -131,8 +160,10 @@ public class CodeGenerator extends TestSupport {
         String expected = """
                 push pointer 0
                     """;
-            assertEquals(expected, actual); }
-    
+            assertEquals(expected, actual);
+    }
+
+
     /*Operadores unários*/
     @Test
     public void testNot () {
@@ -147,7 +178,8 @@ public class CodeGenerator extends TestSupport {
                 push constant 0   
                 not    
                     """;
-            assertEquals(expected, actual);}
+            assertEquals(expected, actual);
+    }
 
     @Test
     public void testMinus () {
@@ -162,7 +194,8 @@ public class CodeGenerator extends TestSupport {
                 push constant 10   
                 neg    
                     """;
-            assertEquals(expected, actual);}
+            assertEquals(expected, actual);
+    }
 
     /*Comandos: return*/
     @Test
@@ -178,7 +211,8 @@ public class CodeGenerator extends TestSupport {
                 push constant 0
                 return       
                     """;
-            assertEquals(expected, actual);}
+            assertEquals(expected, actual);
+    }
 
     @Test
     public void testReturnExpr () {
@@ -193,7 +227,10 @@ public class CodeGenerator extends TestSupport {
                 push constant 10
                 return       
                     """;
-            assertEquals(expected, actual);}
+            assertEquals(expected, actual);
+    }
+
+
 
     /*Testando o if*/
     @Test
@@ -222,7 +259,9 @@ public class CodeGenerator extends TestSupport {
             return
             label IF_END0 
                     """;
-            assertEquals(expected, actual);}
+            assertEquals(expected, actual);
+    }
+
 
     @Test
     public void testWhile () {
@@ -245,4 +284,219 @@ public class CodeGenerator extends TestSupport {
             goto WHILE_EXP0
             label WHILE_END0
                     """;
-            assertEquals(expected, actual);}}
+            assertEquals(expected, actual);}
+        
+    @Test
+    public void testSimpleFunctionWithVar () {
+        var input = """
+            class Main {
+
+                    function int funcao () {
+                        var int d;
+                        return d;
+                    }
+                
+                }
+            """;;
+        var parser = new Parser(input.getBytes(StandardCharsets.UTF_8));
+        parser.parse();
+        String actual = parser.VMOutput();
+        String expected = """
+            function Main.funcao 1
+            push local 0
+            return
+            """;
+        assertEquals(expected, actual);}
+    
+    @Test
+    public void testLet () {
+        var input = """
+            class Main {
+            
+                function void main () {
+                    var int x;
+                    let x = 42;
+                    return;
+                }
+            }
+            """;;
+        var parser = new Parser(input.getBytes(StandardCharsets.UTF_8));
+        parser.parse();
+        String actual = parser.VMOutput();
+        String expected = """
+            function Main.main 1
+            push constant 42
+            pop local 0
+            push constant 0
+            return
+                """;
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testSimpleFunctions () {
+        var input = """
+            class Main {
+    
+                function int soma (int x, int y) {
+                        return  30;
+                    }
+                
+                    function void main () {
+                        var int d;
+                        return;
+                    }
+                
+                }
+            """;;
+        var parser = new Parser(input.getBytes(StandardCharsets.UTF_8));
+        parser.parse();
+        String actual = parser.VMOutput();
+        String expected = """
+            function Main.soma 0
+            push constant 30
+            return
+            function Main.main 1
+            push constant 0
+            return    
+                """;
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void arrayTest () {
+        var input = """
+            class Main {
+                function void main () {
+                    var Array v;
+                    let v[2] = v[3] + 42;
+                    return;
+                }
+            }
+            """;;
+        var parser = new Parser(input.getBytes(StandardCharsets.UTF_8));
+        parser.parse();
+        String actual = parser.VMOutput();
+        String expected = """
+            function Main.main 1
+            push constant 2
+            push local 0
+            add
+            push constant 3
+            push local 0
+            add
+            pop pointer 1
+            push that 0
+            push constant 42
+            add
+            pop temp 0
+            pop pointer 1
+            push temp 0
+            pop that 0
+            push constant 0
+            return        
+                """;
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void doStatement () {
+        var input = """
+            class Main {
+                function void main () {
+                    var int x;
+                    let x = 10;
+                    do Output.printInt(x);
+                    return;
+                }
+            }
+            """;;
+        var parser = new Parser(input.getBytes(StandardCharsets.UTF_8));
+        parser.parse();
+        String actual = parser.VMOutput();
+        String expected = """
+            function Main.main 1
+            push constant 10
+            pop local 0
+            push local 0
+            pop temp 0
+            push constant 0
+            return
+                """;
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void methodsConstructorTest () {
+        var input = """
+            class Point {
+                field int x, y;
+            
+                method int getX () {
+                    return x;
+                }
+            
+                method int getY () {
+                    return y;
+                }
+            
+                method void print () {
+                    do Output.printInt(getX());
+                    do Output.printInt(getY());
+                    return;
+                }
+            
+                constructor Point new(int Ax, int Ay) { 
+                  var int w;             
+                  let x = Ax;
+                  let y = Ay;
+                  let w = 42;
+                  let x = w;
+                  return this;
+               }
+              }
+            """;;
+        var parser = new Parser(input.getBytes(StandardCharsets.UTF_8));
+        parser.parse();
+        String actual = parser.VMOutput();
+        String expected = """
+            function Point.getX 0
+            push argument 0
+            pop pointer 0
+            push this 0
+            return
+            function Point.getY 0
+            push argument 0
+            pop pointer 0
+            push this 1
+            return
+            function Point.print 0
+            push argument 0
+            pop pointer 0
+            push pointer 0
+            call Point.getX 1
+            call Output.printInt 1
+            pop temp 0
+            push pointer 0
+            call Point.getY 1
+            call Output.printInt 1
+            pop temp 0
+            push constant 0
+            return
+            function Point.new 1
+            push constant 2
+            call Memory.alloc 1
+            pop pointer 0
+            push argument 0
+            pop this 0
+            push argument 1
+            pop this 1
+            push constant 42
+            pop local 0
+            push local 0
+            pop this 0
+            push pointer 0
+            return            
+                """;
+        assertEquals(expected, actual);
+    }}
