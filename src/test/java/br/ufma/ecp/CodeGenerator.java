@@ -41,7 +41,7 @@ public class CodeGenerator extends TestSupport {
     @Test
     public void testSimpleExpression2 () {
         var input = """
-            10 + 30 + 40
+            10 + 30 * 40
             """;
         
         var parser = new Parser(input.getBytes(StandardCharsets.UTF_8));
@@ -52,6 +52,6 @@ public class CodeGenerator extends TestSupport {
                 push constant 30
                 add
                 push constant 40
-                add
+                call Math.multiply 2
                     """;
             assertEquals(expected, actual);}
