@@ -7,10 +7,12 @@ import br.ufma.ecp.token.Token;
 import br.ufma.ecp.token.TokenType;
 
 public class Scanner {
+
     private byte[] input;
     private int current;
-    private int start;
     private int line = 1;
+    private int start;
+
     private static final Map<String, TokenType> keywords;
  
     static {
@@ -40,114 +42,112 @@ public class Scanner {
     public Scanner (byte[] input) {
         this.input = input;
         current = 0;
-        start = 0;}
+        start = 0;}    
 
-    private void skipLineComments() {
-        for (char ch = peek(); ch != '\n' && ch != 0; advance(), ch = peek())
-            if (ch == '\n')
-                line++;}
-    
     public Token nextToken () {
         skipWhitespace();
         start = current;
         char ch = peek();
+
         if (Character.isDigit(ch)) {
             return number();}
         if (isAlpha(ch)) {
             return identifier();}
-        switch (ch) {
+        switch (ch) {            
             case '"':
                 return string();
             case '/':
                 if (peekNext() == '/') {
                     skipLineComments();
-                return nextToken();} 
+                    return nextToken();} 
                 else if (peekNext() == '*') {
                     skipBlockComments();
                     return nextToken();}
                 else {
-                    return new Token (TokenType.SLASH,"/",line);}
+                    advance();
+                    return new Token (TokenType.SLASH,"/", line);}
             case '+':
                 advance();
-                return new Token (TokenType.PLUS,"+",line);
+                return new Token (TokenType.PLUS,"+", line);
             case '-':
                 advance();
-                return new Token (TokenType.MINUS,"-",line); 
+                return new Token (TokenType.MINUS,"-", line); 
             case '*':
                 advance();
-                return new Token (TokenType.ASTERISK,"*",line); 
+                return new Token (TokenType.ASTERISK,"*", line); 
             case '.':
                 advance();
-                return new Token (TokenType.DOT,".",line); 
+                return new Token (TokenType.DOT,".", line); 
             case '&':
                 advance();
-                return new Token (TokenType.AND,"&",line); 
+                return new Token (TokenType.AND,"&", line); 
             case '|':
                 advance();
-                return new Token (TokenType.OR,"|",line); 
+                return new Token (TokenType.OR,"|", line); 
             case '~':
                 advance();
-                return new Token (TokenType.NOT,"~",line); 
+                return new Token (TokenType.NOT,"~", line); 
             case '>':
                 advance();
-                return new Token (TokenType.GT,">",line); 
+                return new Token (TokenType.GT,">", line); 
             case '<':
                 advance();
-                return new Token (TokenType.LT,"<",line); 
+                return new Token (TokenType.LT,"<", line); 
             case '=':
                 advance();
-                return new Token (TokenType.EQ,"=",line); 
+                return new Token (TokenType.EQ,"=", line); 
             case '(':
                 advance();
-                return new Token (TokenType.LPAREN,"(",line); 
+                return new Token (TokenType.LPAREN,"(", line); 
             case ')':
                 advance();
-                return new Token (TokenType.RPAREN,")",line); 
+                return new Token (TokenType.RPAREN,")", line); 
             case '{':
                 advance();
-                return new Token (TokenType.LBRACE,"{",line); 
+                return new Token (TokenType.LBRACE,"{", line); 
             case '}':
                 advance();
-                return new Token (TokenType.RBRACE,"}",line); 
+                return new Token (TokenType.RBRACE,"}", line); 
             case '[':
                 advance();
-                return new Token (TokenType.LBRACKET,"[",line); 
+                return new Token (TokenType.LBRACKET,"[", line); 
             case ']':
                 advance();
-                return new Token (TokenType.RBRACKET,"]",line); 
+                return new Token (TokenType.RBRACKET,"]", line); 
             case ';':
                 advance();
-                return new Token (TokenType.SEMICOLON,";",line); 
+                return new Token (TokenType.SEMICOLON,";", line); 
             case ',':
                 advance();
-                return new Token (TokenType.COMMA,",",line);
+                return new Token (TokenType.COMMA,",", line);                
             case 0:
-                advance();
-                return new Token (TokenType.EOF,"EOF",line);
+                return new Token (EOF,"EOF", line);
             default:
                 advance();
                 return new Token(ILLEGAL, Character.toString(ch), line);}}
-    
+
     private Token identifier() {
         while (isAlphaNumeric(peek())) advance();
+
         String id = new String(input, start, current-start, StandardCharsets.UTF_8)  ;
         TokenType type = keywords.get(id);
         if (type == null) type = IDENT;
-        return new Token(type, id,line);}
+        return new Token(type, id, line);}
 
     private Token number() {
         while (Character.isDigit(peek())) {
             advance();}
+        
             String num = new String(input, start, current-start, StandardCharsets.UTF_8)  ;
-            return new Token(NUMBER, num,line);}
+            return new Token(NUMBER, num, line);}
 
     private Token string () {
         advance();
         start = current;
         while (peek() != '"' && peek() != 0) {
-            advance();}
+            advance();        }
         String s = new String(input, start, current-start, StandardCharsets.UTF_8);
-        Token token = new Token (TokenType.STRING,s,line);
+        Token token = new Token (TokenType.STRING,s, line);
         advance();
         return token;}
 
@@ -161,6 +161,20 @@ public class Scanner {
                (c >= 'A' && c <= 'Z') ||
                 c == '_';}
     
+      private boolean isAlphaNumeric(char c) {
+        return isAlpha(c) || Character.isDigit((c));}
+    
+    private char peek () {
+        if (current < input.length)
+           return (char)input[current];
+       return 0;}
+    private char peekNext () {
+        int next = current + 1;
+        if ( next  < input.length) {
+            return (char)input[next];} 
+        else {
+            return 0;}}
+
     private void skipBlockComments() {
         boolean endComment = false;
         advance();
@@ -182,28 +196,18 @@ public class Scanner {
               endComment = true;
               advance();}}}}
     
-    private void skipWhitespace() {
-        char ch = peek();
-        while (ch == ' ' || ch == '\r' || ch == '\t' || ch == '\n') {
-
-            if (ch == '\n')
-                line++;
-
-            advance();
-            ch = peek();}}
+    private void skipLineComments() {
     
-      private boolean isAlphaNumeric(char c) {
-        return isAlpha(c) || Character.isDigit((c));}
+            for (char ch = peek(); ch != '\n' && ch != 0; advance(), ch = peek())
+                if (ch == '\n')
+                    line++;}
     
-
-    private char peek () {
-        if (current < input.length)
-           return (char)input[current];
-       return 0;}    
+        private void skipWhitespace() {
+            char ch = peek();
+            while (ch == ' ' || ch == '\r' || ch == '\t' || ch == '\n') {
     
-    private char peekNext () {
-        int next = current + 1;
-        if ( next  < input.length) {
-            return (char)input[next];} 
-        else {
-            return 0;}}}
+                if (ch == '\n')
+                    line++;
+    
+                advance();
+                ch = peek();}}}
