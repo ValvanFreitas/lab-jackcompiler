@@ -2,18 +2,22 @@ package br.ufma.ecp;
 import br.ufma.ecp.token.Token;
 import br.ufma.ecp.token.TokenType;
 import static br.ufma.ecp.token.TokenType.*;
+import br.ufma.ecp.VMWriter.Segment;
 
 public class Parser {
 
     private static class ParseError extends RuntimeException {}
- 
-     private Scanner scan;
-     private Token currentToken;
-     private Token peekToken;
-     //Possibilita concatenar, através do Stringbuilder, para formar string
-     private StringBuilder xmlOutput = new StringBuilder();
+    private Scanner scan;
+    private Token currentToken;
+    private Token peekToken;
+    //Possibilita concatenar, através do Stringbuilder, para formar string
+    private StringBuilder xmlOutput = new StringBuilder();
+    private VMWriter vmWriter = new VMWriter();
 
-     //Constructor - receives the inputs
+    public String VMOutput() {
+        return vmWriter.vmOutput();}
+
+     //Construtor - recebe os inputs
      public Parser(byte[] input) {
          scan = new Scanner(input);
          nextToken();}
