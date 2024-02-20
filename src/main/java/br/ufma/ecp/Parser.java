@@ -221,9 +221,11 @@ public class Parser {
      void parseExpression() {
         printNonTerminal("expression"); //Teste de unidade
         parseTerm ();
-        while (isOperator(peekToken.lexeme)) {
+        while (isOperator(peekToken.type)) {
+            var ope = peekToken.type;
             expectPeek(peekToken.type);
-            parseTerm();}
+            parseTerm();
+            compileOperators(ope);}
         printNonTerminal("/expression");}
 
      void parseTerm() {
@@ -300,4 +302,30 @@ public class Parser {
              report(token.line, " at end", message);} 
          else {
              report(token.line, " at '" + token.lexeme + "'", message);}
-         return new ParseError();}}
+         return new ParseError();}
+
+public void compileOperators(TokenType type) {
+
+        if (type == ASTERISK) {
+            vmWriter.writeCall("Math.multiply", 2);} 
+        else if (type == SLASH) {
+            vmWriter.writeCall("Math.divide", 2);} 
+        else {
+            vmWriter.writeArithmetic(typeOperator(type));}}
+
+    private Command typeOperator(TokenType type) {
+        if (type == PLUS)
+            return Command.ADD;
+        if (type == MINUS)
+            return Command.SUB;
+        if (type == LT)
+            return Command.LT;
+        if (type == GT)
+            return Command.GT;
+        if (type == EQ)
+            return Command.EQ;
+        if (type == AND)
+            return Command.AND;
+        if (type == OR)
+            return Command.OR;
+        return null;}}
