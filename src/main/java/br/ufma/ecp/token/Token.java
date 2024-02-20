@@ -36,5 +36,5 @@ public class Token {
                 valor = "&amp;" ;}}             
         if (TokenType.isKeyword(this.type) )
             type = "keyword";
-
-        return "<"+line+":"+ type + "> " + valor  + " </" + type + ">";}}
+        
+        return "<"+ type + "> " + valor  + " </" + type + ">";}}
