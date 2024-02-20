@@ -20,7 +20,7 @@ public class CodeGenerator extends TestSupport {
         String expected = """
                 push constant 10       
                     """;
-            assertEquals(expected, actual);}}
+            assertEquals(expected, actual);}
 
     @Test
     public void testSimpleExpression () {
@@ -76,3 +76,64 @@ public class CodeGenerator extends TestSupport {
                 call String.appendChar 2
                     """;
             assertEquals(expected, actual);}
+    @Test
+    public void testFalse () {
+        var input = """
+            false
+            """;
+        
+        var parser = new Parser(input.getBytes(StandardCharsets.UTF_8));
+        parser.parseExpression();
+        String actual = parser.VMOutput();
+        String expected = """
+                push constant 0       
+                    """;
+            assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testNull () {
+        var input = """
+            null
+            """;
+        
+        var parser = new Parser(input.getBytes(StandardCharsets.UTF_8));
+        parser.parseExpression();
+        String actual = parser.VMOutput();
+        String expected = """
+                push constant 0       
+                    """;
+            assertEquals(expected, actual);
+    }
+
+
+    @Test
+    public void testTrue () {
+        var input = """
+            true
+            """;
+        
+        var parser = new Parser(input.getBytes(StandardCharsets.UTF_8));
+        parser.parseExpression();
+        String actual = parser.VMOutput();
+        String expected = """
+                push constant 0
+                not       
+                    """;
+            assertEquals(expected, actual);
+    }
+
+
+    @Test
+    public void testThis () {
+        var input = """
+            this
+            """;
+        
+        var parser = new Parser(input.getBytes(StandardCharsets.UTF_8));
+        parser.parseExpression();
+        String actual = parser.VMOutput();
+        String expected = """
+                push pointer 0
+                    """;
+            assertEquals(expected, actual);    }}
