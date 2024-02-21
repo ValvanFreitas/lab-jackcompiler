@@ -1,0 +1,11 @@
+function Main.main 1
+call SquareGame.new 2
+pop local 0
+push local 0
+call SquareGame.run 3
+pop temp 0
+push local 0
+call SquareGame.dispose 3
+pop temp 0
+push constant 0
+return
